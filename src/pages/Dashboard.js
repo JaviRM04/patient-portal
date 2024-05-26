@@ -1,75 +1,95 @@
+// src/components/PatientDashboard.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Typography, CircularProgress, Paper, Box } from '@mui/material';
-import { useUser } from '../components/UserContext';  // Asegúrate de que la ruta sea correcta
+import { useUser } from '../components/UserContext';
+import { Container, Typography, CircularProgress, Snackbar, Paper } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+import { styled } from '@mui/system';
 
-const Dashboard = () => {
-    const { userName, gender } = useUser();  // Obtener el nombre y género del usuario del contexto
+const DashboardPaper = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(4),
+    marginTop: theme.spacing(4),
+    backgroundColor: '#f5f5f5',
+    boxShadow: theme.shadows[3],
+    borderRadius: '8px',
+}));
+
+const DashboardContainer = styled(Container)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+}));
+
+const WelcomeTypography = styled(Typography)(({ theme }) => ({
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(2),
+    color: theme.palette.primary.main,
+}));
+
+const SubheadingTypography = styled(Typography)(({ theme }) => ({
+    marginBottom: theme.spacing(2),
+    color: theme.palette.text.secondary,
+}));
+
+const BodyTypography = styled(Typography)(({ theme }) => ({
+    marginBottom: theme.spacing(2),
+}));
+
+const PatientDashboard = () => {
+    const { userId, userName } = useUser();
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Aquí podrías hacer llamadas a la API si necesitas datos adicionales
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setError('Error fetching data');
+                setSnackbarMessage('Error fetching data');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, []);
+    }, [userId]);
 
-    const saludo = gender === 'Masculino' ? 'Bienvenido' : 'Bienvenida';
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
 
     if (loading) {
         return (
-            <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <DashboardContainer>
                 <CircularProgress />
-            </Container>
+            </DashboardContainer>
         );
     }
 
-    if (error) {
-        return <Typography variant="h6" color="error">{error}</Typography>;
-    }
-
     return (
-        <Container>
-            <Paper elevation={3} style={{ padding: '30px', marginTop: '20px' }}>
-                <Typography variant="h2" gutterBottom>
-                    {saludo}, {userName}
-                </Typography>
-                <Box mt={4} mb={4}>
-                    <Typography variant="h5" gutterBottom style={{ color: '#4caf50' }}>
-                        Gestión Integral para Recepcionistas
-                    </Typography>
-                    <Typography variant="body1" gutterBottom style={{ marginBottom: '20px' }}>
-                        Aquí puedes gestionar las citas, pacientes y profesionales de salud. Utiliza el menú de navegación para acceder a las diferentes secciones del portal.
-                    </Typography>
-                </Box>
-                <Box mt={4} mb={4} style={{ backgroundColor: '#e3f2fd', padding: '20px', borderRadius: '8px' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Tu Rol es Crucial
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        Como recepcionista, tu rol es crucial para asegurar que todos los procesos administrativos se lleven a cabo de manera eficiente. Gracias por tu dedicación y esfuerzo.
-                    </Typography>
-                </Box>
-                <Box mt={4} mb={4} style={{ backgroundColor: '#fff3e0', padding: '20px', borderRadius: '8px' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Recordatorio
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        Recuerda revisar las citas programadas y asegurarte de que la información de los pacientes esté actualizada. Si tienes alguna pregunta, no dudes en contactar con el administrador del sistema.
-                    </Typography>
-                </Box>
-            </Paper>
-        </Container>
+        <DashboardContainer>
+            <DashboardPaper>
+                <WelcomeTypography variant="h2" gutterBottom>
+                    Bienvenido, {userName}
+                </WelcomeTypography>
+                <SubheadingTypography variant="h5" gutterBottom>
+                    Nos alegra verte de nuevo. Aquí puedes gestionar tu información personal, ver tus próximas citas, revisar tus análisis de sangre y tus visitas médicas.
+                </SubheadingTypography>
+                <BodyTypography variant="body1" gutterBottom>
+                    Recuerda que cuidar de tu salud es lo más importante. Revisa regularmente tus análisis de sangre, mantén tus datos actualizados y no dudes en contactar a tu médico si tienes alguna duda o preocupación. Estamos aquí para ayudarte en cada paso del camino hacia una vida más saludable.
+                </BodyTypography>
+            </DashboardPaper>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <MuiAlert onClose={handleSnackbarClose} severity={snackbarSeverity} elevation={6} variant="filled">
+                    {snackbarMessage}
+                </MuiAlert>
+            </Snackbar>
+        </DashboardContainer>
     );
 };
 
-export default Dashboard;
+export default PatientDashboard;

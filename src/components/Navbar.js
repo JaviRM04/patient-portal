@@ -11,9 +11,10 @@ function Navbar() {
           Sistema de Gestion de Datos Medicos
         </Typography>
         <Button color="inherit" component={Link} to="/">Inicio</Button>
-        <Button color="inherit" component={Link} to="/patients">Lista de Pacientes</Button>
-        <Button color="inherit" component={Link} to="/users">Lista de Usuarios</Button>
+        <Button color="inherit" component={Link} to="/profile">Perfil</Button>
         <Button color="inherit" component={Link} to="/appointments">Citas</Button>
+        <Button color="inherit" component={Link} to="/blood-tests">Analisis de Sangre</Button>
+        <Button color="inherit" component={Link} to="/medical-visits">Visitas Medicas</Button>
       </Toolbar>
     </AppBar>
   );
